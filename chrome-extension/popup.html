@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Property Hunter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <div class="brand-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 11.5 12 4l9 7.5"></path>
+                        <path d="M5 10v10h14V10"></path>
+                        <path d="M10 20v-6h4v6"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>Facebook Property Hunter</h1>
+                    <p class="tagline">Track listings that match your keywords</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="status-message"></div>
+
+        <!-- Keywords Section -->
+        <section class="card keywords-section">
+            <div class="card-header">
+                <label for="keywordInput" class="label">
+                    <span class="label-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-3.5-3.5"></path>
+                        </svg>
+                    </span>
+                    Your Keywords
+                </label>
+                <span id="keywordCount" class="pill pill-muted">No keywords</span>
+            </div>
+            <textarea
+                id="keywordInput"
+                class="keyword-textarea"
+                placeholder="Kharadi&#10;Tingre Nagar&#10;Pune flat&#10;1BHK"
+                rows="5"
+            ></textarea>
+
+            <div class="match-mode" role="group" aria-label="Match mode">
+                <span class="match-mode-label">Match</span>
+                <div class="segmented" role="tablist">
+                    <button type="button" id="modeAny" class="segmented-btn is-active" role="tab" aria-selected="true" data-mode="any">
+                        <span class="segmented-label">Any</span>
+                        <span class="segmented-hint">OR</span>
+                    </button>
+                    <button type="button" id="modeAll" class="segmented-btn" role="tab" aria-selected="false" data-mode="all">
+                        <span class="segmented-label">All</span>
+                        <span class="segmented-hint">AND</span>
+                    </button>
+                </div>
+            </div>
+
+            <p class="hint" id="modeHint">One keyword per line or comma-separated. <strong>Any</strong>: match posts containing at least one keyword.</p>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="buttons-section">
+            <button id="saveBtn" class="button button-primary" title="Save keywords">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path></svg>
+                <span>Save</span>
+            </button>
+            <button id="scanBtn" class="button button-secondary" title="Scan current Facebook page">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15A9 9 0 1 1 18 6.49L23 10"></path></svg>
+                <span>Hunt Now</span>
+            </button>
+            <button id="stopBtn" class="button button-stop hidden" title="Stop hunting">
+                <span class="stop-dot" aria-hidden="true"></span>
+                <span>Stop</span>
+            </button>
+            <button id="clearBtn" class="button button-tertiary" title="Clear all keywords and results">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"></path></svg>
+                <span>Clear</span>
+            </button>
+        </section>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Hunting through the feed...</p>
+            <p class="loading-sub">This can take 30–45 seconds</p>
+        </div>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section hidden">
+            <div class="results-header">
+                <h2>
+                    <span class="label-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"></path></svg>
+                    </span>
+                    Matches
+                </h2>
+                <span id="resultCount" class="pill pill-accent">0 posts</span>
+            </div>
+            <div id="resultsList" class="results-list"></div>
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
+                    </svg>
+                </div>
+                <p>No matching posts yet. Try scrolling Facebook first, then hit <strong>Hunt Now</strong>.</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <span class="footer-dot"></span>
+            <span>Property Hunter · v1.0</span>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

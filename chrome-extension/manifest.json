@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Facebook Property Hunter",
+  "version": "1.0.0",
+  "description": "Hunt down property listings on Facebook that match your keywords — fast.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://www.facebook.com/*",
+    "https://facebook.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Facebook Property Hunter"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.facebook.com/*",
+        "https://facebook.com/*",
+        "*://facebook.com/*",
+        "*://*.facebook.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
