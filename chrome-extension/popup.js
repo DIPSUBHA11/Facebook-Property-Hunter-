@@ -224,17 +224,39 @@ async function handleScanPage() {
 
 /**
  * Handle Stop button click — asks the content script to end the current scan.
+ * Also flips scanState locally so the UI recovers even if the content script
+ * is stale (e.g. Facebook tab wasn't refreshed after reloading the extension)
+ * and never receives the STOP_SCAN message.
  */
 async function handleStopScan() {
     stopBtn.disabled = true;
+    showStatusMessage('Stopping scan…', 'info');
+
+    // 1) Immediately mark idle so the spinner disappears even if step 2 fails.
+    //    Update the UI synchronously; the storage.onChanged listener would get
+    //    there eventually but there's a small delay before it fires.
+    setScanningUI(false);
+    chrome.storage.local.set({ scanState: 'idle' });
+
+    // 2) Best-effort: tell the content script to abort its scroll loop.
     try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!tab) return;
-        chrome.tabs.sendMessage(tab.id, { type: 'STOP_SCAN' }, () => {
-            // Ignore chrome.runtime.lastError — content script may have already finished
-            void chrome.runtime.lastError;
-        });
-        showStatusMessage('Stopping scan…', 'info');
+        if (tab) {
+            chrome.tabs.sendMessage(tab.id, { type: 'STOP_SCAN' }, () => {
+                if (chrome.runtime.lastError) {
+                    console.warn(
+                        '[Property Hunter] STOP_SCAN could not reach the content script — ' +
+                        'the Facebook tab may still be running an old scroll loop. ' +
+                        'Refresh the Facebook tab to fully stop it.',
+                        chrome.runtime.lastError.message
+                    );
+                    showStatusMessage(
+                        'Stopped. If the page keeps scrolling, refresh the Facebook tab.',
+                        'info'
+                    );
+                }
+            });
+        }
     } finally {
         setTimeout(() => { stopBtn.disabled = false; }, 500);
     }
